@@ -109,7 +109,7 @@ describe("EXO unit test", async function () {
 
   describe("UnStake", () => {
     it("UnStake Nft", async () => {
-      await helpers.time.increase(60 * 60 * 24 * 36);
+      await helpers.time.increase(60 * 60 * 24 * 77);
 
       let unstakeReciept = await ERCToken.connect(Bob).unstake(
         NFTContract.address,
@@ -126,7 +126,7 @@ describe("EXO unit test", async function () {
     });
 
     it("Check Reward", async () => {
-      const amount = ethers.utils.parseUnits("9", "ether");
+      const amount = ethers.utils.parseUnits("9.000000001", "ether");
 
       let reward = await ERCToken.connect(Bob).checkReward();
       expect(reward.toString()).to.be.equal(amount.toString());

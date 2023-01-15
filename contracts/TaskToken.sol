@@ -109,7 +109,7 @@ contract TaskToken is ERC20, Ownable, ITaskToken {
         uint256 reward = 0;
 
         if (stakedDays > 0) {
-            if (stakedDays < 30) {
+            if (stakedDays < 90) {
                 stakedDays = stakedDays / 2;
 
                 if (stakedDays % 2 != 0) {
