@@ -39,6 +39,11 @@ interface ITaskToken {
     );
 
     /**
+     * @notice Change merkle root hash
+     */
+    function setMerkleRoot(bytes32 _merkleRootHash) external;
+
+    /**
      * @dev mint
      * @param _to mint tokens to
      * @param _amount amount of tokens to be minted
@@ -79,4 +84,40 @@ interface ITaskToken {
         uint256 _nftId,
         address _owner
     ) external view returns (StakingInfo memory);
+
+    /**
+     * @dev Transfers Erc20 with whitelist Check
+     * @param to address to send tokens tp
+     * @param amount amount of tokens to be transfered
+     * @param _merkleProof merkle tree proof
+     */
+    function transfer(
+        address to,
+        uint256 amount,
+        bytes32[] calldata _merkleProof
+    ) external returns (bool);
+
+    /**
+     * @dev TransferFrom Erc20 with whitelist Check
+     * @param from address to get tokens from
+     * @param to address to send tokens tp
+     * @param amount amount of tokens to be transfered
+     * @param _merkleProof merkle tree proof
+     */
+    function transferFrom(
+        address from,
+        address to,
+        uint256 amount,
+        bytes32[] calldata _merkleProof
+    ) external returns (bool);
+
+    /**
+     * @dev withdraws reward
+     */
+    function withdraw() external returns (bool);
+
+    /**
+     * @dev Returns reward of `_holder`
+     */
+    function checkReward() external view returns (uint256);
 }

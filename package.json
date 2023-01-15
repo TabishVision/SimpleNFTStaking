@@ -14,9 +14,10 @@
     "hardhat": "^2.12.6"
   },
   "dependencies": {
-    "@openzeppelin/contracts": "^4.8.0",
+    "@nomicfoundation/hardhat-network-helpers": "^1.0.7",
     "@nomiclabs/hardhat-solhint": "^3.0.0",
-    "prettier-plugin-solidity": "^1.1.1",
-    "@nomicfoundation/hardhat-network-helpers": "^1.0.7"
+    "@openzeppelin/contracts": "^4.8.0",
+    "merkletreejs": "^0.3.9",
+    "prettier-plugin-solidity": "^1.1.1"
   }
 }
