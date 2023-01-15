@@ -30,8 +30,34 @@ contract TaskToken is ERC20, Ownable, ITaskToken {
     //Daily Limit For Each User
     mapping(address => uint256) public dailyLimit;
 
-    modifier onlyContract() {
-        require(_msgSender() == address(this), "EERC20: Unathorized");
+    //Day Start For Each User
+    mapping(address => uint256) public dayStart;
+
+    modifier checkLimit(
+        bytes32[] calldata _merkleProof,
+        address _user,
+        uint256 _amount
+    ) {
+        if (dayStart[_user] > 0) {
+            if (block.timestamp - dayStart[_user] > 1 days) {
+                dayStart[_user] = block.timestamp;
+                dailyLimit[_user] = 0;
+            }
+        }
+        if (verifyAddress(_merkleProof, _user)) {
+            if (dailyLimit[_user] + _amount > WHITELIST_LIMIT) {
+                revert("ERC20: Exceeds WhiteList Limit");
+            }
+        } else {
+            if (dailyLimit[_user] + _amount > NON_WHITELIST_LIMIT) {
+                revert("ERC20: Exceeds Daily Limit");
+            }
+        }
+
+        if (dayStart[_user] == 0) {
+            dayStart[_user] = block.timestamp;
+        }
+
         _;
     }
 
@@ -161,18 +187,13 @@ contract TaskToken is ERC20, Ownable, ITaskToken {
         address to,
         uint256 amount,
         bytes32[] calldata _merkleProof
-    ) external override returns (bool) {
+    )
+        external
+        override
+        checkLimit(_merkleProof, msg.sender, amount)
+        returns (bool)
+    {
         address owner = _msgSender();
-
-        if (verifyAddress(_merkleProof, owner)) {
-            if (dailyLimit[owner] + amount > WHITELIST_LIMIT) {
-                revert("ERC20: Exceeds WhiteList Limit");
-            }
-        } else {
-            if (dailyLimit[owner] + amount > NON_WHITELIST_LIMIT) {
-                revert("ERC20: Exceeds Daily Limit");
-            }
-        }
         _transfer(owner, to, amount);
         dailyLimit[owner] += amount;
 
@@ -185,17 +206,8 @@ contract TaskToken is ERC20, Ownable, ITaskToken {
         address to,
         uint256 amount,
         bytes32[] calldata _merkleProof
-    ) external override returns (bool) {
+    ) external override checkLimit(_merkleProof, from, amount) returns (bool) {
         address spender = _msgSender();
-        if (verifyAddress(_merkleProof, from)) {
-            if (dailyLimit[from] + amount > WHITELIST_LIMIT) {
-                revert("ERC20: Exceeds WhiteList Limit");
-            }
-        } else {
-            if (dailyLimit[from] + amount > NON_WHITELIST_LIMIT) {
-                revert("ERC20: Exceeds Daily Limit");
-            }
-        }
         _spendAllowance(from, spender, amount);
         _transfer(from, to, amount);
         dailyLimit[from] += amount;
